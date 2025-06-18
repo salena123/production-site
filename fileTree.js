@@ -1,19 +1,3 @@
-const fileTree = {
-  name: 'root',
-  children: [
-    { name: 'index.html' },
-    { name: 'style.css' },
-    { name: 'script.js' },
-    { name: 'logs.js' },
-    {
-      name: 'picture',
-      children: [
-        { name: 'катенак.jpg' }
-      ]
-    }
-  ]
-};
-
 function renderTree(node, parent) {
   const li = document.createElement('li');
 
@@ -44,30 +28,6 @@ function renderTree(node, parent) {
 
   parent.appendChild(li);
 }
-
-document.querySelectorAll('a[data-view]').forEach(link => {
-  link.addEventListener('click', function (e) {
-    logAction(window.currentRole, 'Пользователь открыл файлы')
-    e.preventDefault();
-    const viewId = this.getAttribute('data-view');
-    const view = document.getElementById(viewId);
-
-    if (!view) return;
-
-    const isHidden = view.classList.contains('hidden');
-
-    if (isHidden && viewId === 'fileTreeView') {
-      const container = document.getElementById('fileTreeContainer');
-      container.innerHTML = '';
-      const ul = document.createElement('ul');
-      renderTree(fileTree, ul);
-      container.appendChild(ul);
-    }
-
-    view.classList.toggle('hidden');
-  });
-});
-
 
 
 function convertToTree(obj, name = "root") {

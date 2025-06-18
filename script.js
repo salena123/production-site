@@ -43,27 +43,37 @@ let USERS = JSON.parse(localStorage.getItem('USERS')) || [
   
 loginForm.addEventListener('submit', async e => {
   e.preventDefault();
-  const u = loginForm.username.value;
-  const p = loginForm.password.value;
+
+  const u = loginForm.username.value.trim();
+  const p = loginForm.password.value.trim();
   const hashed = await hashPassword(p);
 
+  const loginWrapper = document.querySelector('.login-wrapper');
+  const passwordWrapper = document.querySelector('.password-wrapper');
+
+  loginWrapper.classList.remove('error');
+  passwordWrapper.classList.remove('error');
+
   const user = USERS.find(x => x.username === u && x.password === hashed);
+
   if (!user) {
-    loginError.textContent = 'Неверный логин или пароль';
+    const usernameExists = USERS.some(x => x.username === u);
+
+    if (!usernameExists) {
+      loginWrapper.classList.add('error');
+    } else {
+      passwordWrapper.classList.add('error');
+    }
+
     logAction(window.currentRole, `Ошибка входа: ${u}`);
     return;
   }
 
-  // Запомнить пользователя
-  if (document.getElementById('rememberMe').checked) {
-    localStorage.setItem('rememberedUser', JSON.stringify({ username: u, password: hashed }));
-  } else {
-    localStorage.removeItem('rememberedUser');
-  }
-
+  // Успешный вход
   logAction(window.currentRole, `Успешный вход: ${u}`);
   window.currentRole = user.role;
   showMain();
+  document.body.classList.remove('backOn');
 });
 
 window.addEventListener('DOMContentLoaded', async () => {
@@ -88,6 +98,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   
   logoutBtn.addEventListener('click', () => {
     logAction(window.currentRole, `Выход пользователя: ${loginForm.username.value}`);
+      document.body.classList.add('backOn');
     loginView.classList.remove('hidden');
     mainView.classList.add('hidden');
     loginForm.reset();
